@@ -1,1 +1,183 @@
+================================================================
+DAX QUERIES — America Bank New
+Cleaned & separated for DAX Studio
+Run each block ONE AT A TIME, then export the result grid.
+================================================================
 
+----------------------------------------------------------------
+Query 1: Quarter range (Min/Max)
+----------------------------------------------------------------
+EVALUATE
+	ROW(
+		"MinQuarter", CALCULATE(MIN('America Bank New'[Quarter])),
+		"MaxQuarter", CALCULATE(MAX('America Bank New'[Quarter]))
+	)
+
+----------------------------------------------------------------
+Query 2: Distinct list of Contacts (top 100)
+----------------------------------------------------------------
+DEFINE
+	VAR __DS0Core = 
+		VALUES('America Bank New'[contact])
+	VAR __DS0PrimaryWindowed = 
+		TOPN(101, __DS0Core, 'America Bank New'[contact], 1)
+EVALUATE
+	__DS0PrimaryWindowed
+ORDER BY
+	'America Bank New'[contact]
+
+----------------------------------------------------------------
+Query 3: Customer count by Job Classification
+----------------------------------------------------------------
+DEFINE
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			'America Bank New'[Job Classification],
+			"CountCustomer_ID", CALCULATE(COUNTA('America Bank New'[Customer ID]))
+		)
+	VAR __DS0BodyLimited = 
+		TOPN(1002, __DS0Core, [CountCustomer_ID], 0, 'America Bank New'[Job Classification], 1)
+EVALUATE
+	__DS0BodyLimited
+ORDER BY
+	[CountCustomer_ID] DESC, 'America Bank New'[Job Classification]
+
+----------------------------------------------------------------
+Query 4: Total Customer Count (single value)
+----------------------------------------------------------------
+EVALUATE
+	ROW(
+		"CountCustomer_ID", CALCULATE(COUNTA('America Bank New'[Customer ID]))
+	)
+
+----------------------------------------------------------------
+Query 5: Total Balance Sum (single value)
+----------------------------------------------------------------
+EVALUATE
+	ROW(
+		"SumBalance", CALCULATE(SUM('America Bank New'[Balance]))
+	)
+
+----------------------------------------------------------------
+Query 6: Count of customers with House Loan = "yes"
+----------------------------------------------------------------
+DEFINE VAR __DS0FilterTable = 
+	TREATAS({"yes"}, 'America Bank New'[houseloan])
+EVALUATE
+	SUMMARIZECOLUMNS(
+		__DS0FilterTable,
+		"Counthouseloan", IGNORE(CALCULATE(COUNTA('America Bank New'[houseloan])))
+	)
+
+----------------------------------------------------------------
+Query 7: Customer count by Gender
+----------------------------------------------------------------
+DEFINE
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			'America Bank New'[Gender],
+			"CountCustomer_ID", CALCULATE(COUNTA('America Bank New'[Customer ID]))
+		)
+	VAR __DS0BodyLimited = 
+		TOPN(1002, __DS0Core, [CountCustomer_ID], 0, 'America Bank New'[Gender], 1)
+EVALUATE
+	__DS0BodyLimited
+ORDER BY
+	[CountCustomer_ID] DESC, 'America Bank New'[Gender]
+
+----------------------------------------------------------------
+Query 8: Customer count by Marital Status
+----------------------------------------------------------------
+DEFINE
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			'America Bank New'[Marital Status],
+			"CountCustomer_ID", CALCULATE(COUNTA('America Bank New'[Customer ID]))
+		)
+	VAR __DS0PrimaryWindowed = 
+		TOPN(201, __DS0Core, [CountCustomer_ID], 0, 'America Bank New'[Marital Status], 1)
+EVALUATE
+	__DS0PrimaryWindowed
+ORDER BY
+	[CountCustomer_ID] DESC, 'America Bank New'[Marital Status]
+
+----------------------------------------------------------------
+Query 9: Count of customers with Loan Default = "yes"
+----------------------------------------------------------------
+DEFINE VAR __DS0FilterTable = 
+	TREATAS({"yes"}, 'America Bank New'[Loan Default])
+EVALUATE
+	SUMMARIZECOLUMNS(
+		__DS0FilterTable,
+		"CountLoan_Default", IGNORE(CALCULATE(COUNTA('America Bank New'[Loan Default])))
+	)
+
+----------------------------------------------------------------
+Query 10: Customer count by State (with Min/Max group summary)
+----------------------------------------------------------------
+DEFINE
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			'America Bank New'[State],
+			"CountState", CALCULATE(COUNTA('America Bank New'[State]))
+		)
+	VAR __DS0BodyLimited = 
+		TOPN(3502, __DS0Core, [CountState], 0, 'America Bank New'[State], 1)
+EVALUATE
+	__DS0BodyLimited
+ORDER BY
+	[CountState] DESC, 'America Bank New'[State]
+
+----------------------------------------------------------------
+Query 10b: State Min/Max group summary (run separately if needed)
+----------------------------------------------------------------
+DEFINE
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			'America Bank New'[State],
+			"CountState", CALCULATE(COUNTA('America Bank New'[State]))
+		)
+EVALUATE
+	GROUPBY(
+		__DS0Core,
+		"MinCountState", MINX(CURRENTGROUP(), [CountState]),
+		"MaxCountState", MAXX(CURRENTGROUP(), [CountState])
+	)
+
+----------------------------------------------------------------
+Query 11: Count of customers with House Loan = "no"
+(This was the query merged/tangled inside Query 10 in the
+original paste — now correctly separated)
+----------------------------------------------------------------
+DEFINE VAR __DS0FilterTable = 
+	TREATAS({"no"}, 'America Bank New'[houseloan])
+EVALUATE
+	SUMMARIZECOLUMNS(
+		__DS0FilterTable,
+		"Counthouseloan", IGNORE(CALCULATE(COUNTA('America Bank New'[houseloan])))
+	)
+
+================================================================
+NOTES
+================================================================
+- Original text had Query 10 and Query 11 spliced together
+  (a "DEFINE VAR __DS0FilterTable =" line landed in the middle
+  of the State query's EVALUATE block). They are split above
+  into Query 10 / Query 10b / Query 11.
+- Paste ONE query block (everything between the dashed headers)
+  into DAX Studio's query pane at a time, then click Run.
+- After each run: Output pane > right-click results > Export,
+  or use the "Output" ribbon button to send straight to Excel/CSV.
+- Recommended export naming so files merge cleanly later:
+    01_quarter_range.csv
+    02_contacts.csv
+    03_job_classification_counts.csv
+    04_total_customer_count.csv
+    05_total_balance.csv
+    06_houseloan_yes_count.csv
+    07_gender_counts.csv
+    08_marital_status_counts.csv
+    09_loan_default_yes_count.csv
+    10_state_counts.csv
+    10b_state_min_max.csv
+    11_houseloan_no_count.csv
