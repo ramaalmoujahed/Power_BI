@@ -1,0 +1,153 @@
+================================================================
+DAX QUERIES — Human Resources Analysis
+For use in DAX Studio (connect to the running Power BI Desktop
+session, paste ONE query at a time into the editor, then Run).
+================================================================
+
+Tables detected in this model (from Report/Layout):
+  - Human Resources   (main fact table)
+  - All Measures      (holding table for measures — no columns, can't be queried directly)
+  - Avg Metrics
+  - Metrics
+  - Dims
+  - Date
+
+Measures detected:
+  - Average Balance Days
+  - Average Salary
+  - Average Sick Days
+  - LY Salary
+  - Measure Logic
+  - Measure Logic Avg
+  - Measure Selected
+  - Measure Selection Avg
+  - Total Active Employees
+  - Total Balance Days
+  - Total Employees
+  - Total Salary Cost
+  - Total Sick Days
+
+Columns detected (on Human Resources / Dims):
+  - Business Unit, Departmets, Dimentions, Education, Gender,
+    Job Classification, Job Involvement, Job Satisfaction, Job Type,
+    Marital Status, Performance Rating, Relationship Satisfaction,
+    Years in current role, Years since last promotion
+
+----------------------------------------------------------------
+Query 1: Full raw data — main fact table
+----------------------------------------------------------------
+EVALUATE 'Human Resources'
+
+----------------------------------------------------------------
+Query 2: Full raw data — Dims table
+----------------------------------------------------------------
+EVALUATE Dims
+
+----------------------------------------------------------------
+Query 3: Full raw data — Date table
+----------------------------------------------------------------
+EVALUATE 'Date'
+
+----------------------------------------------------------------
+Query 4: Full raw data — Metrics table
+----------------------------------------------------------------
+EVALUATE Metrics
+
+----------------------------------------------------------------
+Query 5: Full raw data — Avg Metrics table
+----------------------------------------------------------------
+EVALUATE 'Avg Metrics'
+
+----------------------------------------------------------------
+Query 6: All measure VALUES in one row
+----------------------------------------------------------------
+EVALUATE
+    ROW(
+        "Average Balance Days", [Average Balance Days],
+        "Average Salary", [Average Salary],
+        "Average Sick Days", [Average Sick Days],
+        "LY Salary", [LY Salary],
+        "Total Active Employees", [Total Active Employees],
+        "Total Balance Days", [Total Balance Days],
+        "Total Employees", [Total Employees],
+        "Total Salary Cost", [Total Salary Cost],
+        "Total Sick Days", [Total Sick Days]
+    )
+
+NOTE: "Measure Logic", "Measure Logic Avg", "Measure Selected", and
+"Measure Selection Avg" depend on a slicer selection from the Metrics /
+Avg Metrics tables. Outside that filter context they may just return a
+default. If you want them anyway, add to the ROW() above:
+        "Measure Selected", [Measure Selected],
+        "Measure Logic", [Measure Logic],
+        "Measure Selection Avg", [Measure Selection Avg],
+        "Measure Logic Avg", [Measure Logic Avg]
+
+----------------------------------------------------------------
+Query 7: Employee counts by Department (example breakdown)
+----------------------------------------------------------------
+DEFINE
+    VAR __DS0Core =
+        SUMMARIZECOLUMNS(
+            'Human Resources'[Departmets],
+            "TotalEmployees", [Total Employees]
+        )
+EVALUATE
+    __DS0Core
+ORDER BY
+    [TotalEmployees] DESC
+
+----------------------------------------------------------------
+Query 8: Employee counts by Gender
+----------------------------------------------------------------
+DEFINE
+    VAR __DS0Core =
+        SUMMARIZECOLUMNS(
+            'Human Resources'[Gender],
+            "TotalEmployees", [Total Employees]
+        )
+EVALUATE
+    __DS0Core
+ORDER BY
+    [TotalEmployees] DESC
+
+----------------------------------------------------------------
+Query 9: Average Salary by Job Classification
+----------------------------------------------------------------
+DEFINE
+    VAR __DS0Core =
+        SUMMARIZECOLUMNS(
+            'Human Resources'[Job Classification],
+            "AvgSalary", [Average Salary]
+        )
+EVALUATE
+    __DS0Core
+ORDER BY
+    [AvgSalary] DESC
+
+----------------------------------------------------------------
+Query 10: Active Employees by Business Unit
+----------------------------------------------------------------
+DEFINE
+    VAR __DS0Core =
+        SUMMARIZECOLUMNS(
+            'Human Resources'[Business Unit],
+            "ActiveEmployees", [Total Active Employees]
+        )
+EVALUATE
+    __DS0Core
+ORDER BY
+    [ActiveEmployees] DESC
+
+================================================================
+NOTES
+================================================================
+- "All Measures" table itself CANNOT be queried directly (same as in
+  the America Bank model) — it's a placeholder table with no columns.
+  Use Query 6 above to get measure VALUES instead.
+- Tables 7-10 are example breakdowns based on columns found in the
+  report — feel free to swap the column name for any other column
+  in the "Columns detected" list above (e.g. swap Gender for
+  Education, Marital Status, Job Type, etc.)
+- Run ONE query at a time in DAX Studio, then use
+  Output ribbon -> Export to CSV/Excel to save each result.
