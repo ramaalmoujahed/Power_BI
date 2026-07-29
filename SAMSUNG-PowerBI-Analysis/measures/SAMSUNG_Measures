@@ -1,1 +1,77 @@
+# Measures Table
 
+```DAX
+Avg_Load_Time = AVERAGE(fact_procurement[lead_time_days])
+
+Days_of_Inventory = DIVIDE(365, [Turnover_Rate])
+
+Defect_Rate = SUM(fact_production[defective_units])
+
+Delivered % = DIVIDE([total_delivered_ship],[Total_Shipment])
+
+discount = SUM(fact_sales[discount_amount])
+
+Discount % =
+VAR product_amt = [discount]+[Total_Revenue]
+RETURN
+DIVIDE([discount],product_amt)
+
+Growth_Revenue =
+VAR curr_rev = [Total_Revenue]
+VAR prev_rev = CALCULATE([Total_Revenue], SAMEPERIODLASTYEAR(dim_date[date]))
+RETURN
+DIVIDE(curr_rev-prev_rev,prev_rev)
+
+Inventory_Value = SUM(fact_inventory[stock_level])
+
+Measure = 
+
+Order_QTY = SUM(fact_procurement[order_quantity])
+
+Perfect Order % =
+VAR perfectOrder =
+    CALCULATE(
+        [Total_Shipment],
+        fact_shipment[status]="Delivered",
+        fact_production[defect_rate_pct]<1
+    )
+RETURN
+DIVIDE(perfectOrder,[Total_Shipment])
+
+Profit = SUM(fact_sales[profit])
+
+Profit Margin % = DIVIDE([Profit],[Total_Revenue])
+
+Reorder Point = SUM(fact_inventory[reorder_point])
+
+Safety_Stock = SUM(fact_Inventory[safety_stock_level])
+
+Shipment_cost = SUM(fact_shipment[shipping_cost])
+
+Total_Delay =
+CALCULATE([Total_Shipment], fact_shipment[status]="Delayed")
+
+Total_Delivered_Quantity =
+CALCULATE([Total_Sales_Quantity],fact_shipment[status]="")
+
+Total_Delivered_ship =
+CALCULATE([Total_Shipment], fact_shipment[status]="Delivered")
+
+Total_QTY_Delay =
+CALCULATE([Total_Sales_Quantity], fact_shipment[Status]="Delayed")
+
+Total_Revenue = SUM(fact_sales[net_revenue])
+
+Total_Sales_Cost = SUM(fact_procurement[total_cost])
+
+Total_Sales_Quantity = SUM(fact_sales[quantity_sold])
+
+Total_Shipment = DISTINCTCOUNT(fact_shipment[shipment_id])
+
+Total_Shipment_Quantity = SUM(fact_shipment[quantity])
+
+Turnover_Rate =
+DIVIDE(
+    [Total_Sales_Quantity],
+    AVERAGE(fact_inventory[stock_level])
+)
