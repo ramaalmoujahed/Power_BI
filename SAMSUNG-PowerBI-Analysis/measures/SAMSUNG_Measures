@@ -1,61 +1,103 @@
-# Procurement & Supply Chain Analytics — DAX Measures
+# SAMSUNG — DAX Measures
 
-Extracted from the Power BI data model using DAX Studio.
-These are the 26 measures defined in the data model, found in the **"Measures Table"**.
+This document describes the DAX measures used in the SAMSUNG Power BI model. It is written in a documentation style so you can copy/paste each measure into your model or use it as a reference.
+
+If you exported the model via DAX Studio or have an "All Measures" table, the original DAX is preserved under each measure's DAX section.
 
 ---
 
-## Avg Load Time
+## How this document is organized
+
+For each measure you'll find:
+- Name: The measure name as it appears in the model (heading).
+- DAX: The measure formula in a DAX code block.
+- Format: Suggested display formatting for visuals.
+- Description: Short explanation of what the measure returns and where it is used.
+- Dependencies / Notes: Any supporting measures, columns, or assumptions.
+
+---
+
+## Measures
+
+### Avg Load Time
+Name: Avg_Load_Time
+
 ```dax
 Avg_Load_Time = AVERAGE(fact_procurement[lead_time_days])
 ```
 Format: Decimal number
 
-Calculates the average procurement lead time in days.
+Description: Calculates the average procurement lead time (in days) using the lead_time_days column from the fact_procurement table.
+
+Dependencies / Notes:
+- Requires fact_procurement[lead_time_days] to be numeric.
 
 ---
 
-## Days of Inventory
+### Days of Inventory
+Name: Days_of_Inventory
+
 ```dax
 Days_of_Inventory = DIVIDE(365, [Turnover_Rate])
 ```
 Format: Whole number
 
-Estimates how many days the current inventory level can support based on inventory turnover.
+Description: Estimates how many days the current inventory level can support based on the inventory turnover rate.
+
+Dependencies / Notes:
+- Depends on the [Turnover_Rate] measure (documented below).
+- Handle zero/blank turnover_rate to avoid divide-by-zero errors.
 
 ---
 
-## Defect Rate
+### Defect Rate
+Name: Defect_Rate
+
 ```dax
 Defect_Rate = SUM(fact_production[defective_units])
 ```
 Format: Whole number
 
-Calculates the total number of defective production units.
+Description: Calculates the total number of defective production units from the fact_production table.
+
+Dependencies / Notes:
+- If a percentage is required, divide by total units produced.
 
 ---
 
-## Delivered %
+### Delivered %
+Name: Delivered %
+
 ```dax
 Delivered % = DIVIDE([total_delivered_ship],[Total_Shipment])
 ```
 Format: Percentage
 
-Measures the percentage of shipments successfully delivered.
+Description: Measures the percentage of shipments that were successfully delivered.
+
+Dependencies / Notes:
+- Relies on [total_delivered_ship] and [Total_Shipment] measures being defined and returning numeric values.
 
 ---
 
-## Discount
+### Discount
+Name: discount
+
 ```dax
 discount = SUM(fact_sales[discount_amount])
 ```
 Format: Currency
 
-Calculates the total discount amount applied to sales.
+Description: Calculates the total discount amount applied to sales.
+
+Dependencies / Notes:
+- Uses fact_sales[discount_amount]. Ensure currency formatting is applied where needed.
 
 ---
 
-## Discount %
+### Discount %
+Name: Discount %
+
 ```dax
 Discount % =
 VAR product_amt = [discount]+[Total_Revenue]
@@ -64,11 +106,16 @@ DIVIDE([discount],product_amt)
 ```
 Format: Percentage
 
-Calculates the discount percentage compared to total revenue before discount.
+Description: Calculates discounts as a percentage of gross amount (discount + revenue).
+
+Dependencies / Notes:
+- Depends on [discount] and [Total_Revenue]. Use DIVIDE to protect against division-by-zero.
 
 ---
 
-## Growth Revenue
+### Growth Revenue
+Name: Growth_Revenue
+
 ```dax
 Growth_Revenue =
 VAR curr_rev = [Total_Revenue]
@@ -82,207 +129,295 @@ DIVIDE(curr_rev-prev_rev,prev_rev)
 ```
 Format: Percentage
 
-Calculates year-over-year revenue growth.
+Description: Calculates year-over-year revenue growth using SAMEPERIODLASTYEAR over the date dimension.
+
+Dependencies / Notes:
+- Requires a properly configured date table (dim_date) marked as a date table.
 
 ---
 
-## Inventory Value
+### Inventory Value
+Name: Inventory_Value
+
 ```dax
 Inventory_Value = SUM(fact_inventory[stock_level])
 ```
 Format: Whole number
 
-Shows the total available inventory stock level.
+Description: Shows the total available inventory stock level.
+
+Dependencies / Notes:
+- If stock value (monetary) is needed, replace with unit_price * stock_level.
 
 ---
 
-## Order Quantity
+### Order Quantity
+Name: Order_QTY
+
 ```dax
 Order_QTY = SUM(fact_procurement[order_quantity])
 ```
 Format: Whole number
 
-Calculates the total quantity ordered from procurement activities.
+Description: Calculates the total quantity ordered from procurement activities.
+
+Dependencies / Notes:
+- Uses fact_procurement[order_quantity].
 
 ---
 
-## Perfect Order %
+### Perfect Order %
+Name: Perfect Order %
+
 ```dax
 Perfect Order % =
 VAR perfectOrder =
     CALCULATE(
         [Total_Shipment],
-        fact_shipment[status]="Delivered",
-        fact_production[defect_rate_pct]<1
+        fact_shipment[status] = "Delivered",
+        fact_production[defect_rate_pct] < 1
     )
 RETURN
-DIVIDE(perfectOrder,[Total_Shipment])
+DIVIDE(perfectOrder, [Total_Shipment])
 ```
 Format: Percentage
 
-Measures the percentage of orders completed successfully without delivery issues or production defects.
+Description: Percentage of orders completed successfully without delivery issues or production defects.
+
+Dependencies / Notes:
+- Depends on [Total_Shipment] measure and fields fact_shipment[status], fact_production[defect_rate_pct].
 
 ---
 
-## Profit
+### Profit
+Name: Profit
+
 ```dax
 Profit = SUM(fact_sales[profit])
 ```
 Format: Currency
 
-Calculates the total profit generated from sales.
+Description: Calculates the total profit generated from sales.
+
+Dependencies / Notes:
+- Uses fact_sales[profit]. Ensure profit is stored per transaction.
 
 ---
 
-## Profit Margin %
+### Profit Margin %
+Name: Profit Margin %
+
 ```dax
 Profit Margin % = DIVIDE([Profit],[Total_Revenue])
 ```
 Format: Percentage
 
-Calculates profit as a percentage of total revenue.
+Description: Profit as a percentage of total revenue.
+
+Dependencies / Notes:
+- Depends on [Profit] and [Total_Revenue].
 
 ---
 
-## Reorder Point
+### Reorder Point
+Name: Reorder Point
+
 ```dax
 Reorder Point = SUM(fact_inventory[reorder_point])
 ```
 Format: Whole number
 
-Shows the inventory threshold where replenishment should be triggered.
+Description: Inventory threshold at which replenishment should be triggered.
+
+Dependencies / Notes:
+- Typically used with supplier lead times and safety stock calculations.
 
 ---
 
-## Safety Stock
+### Safety Stock
+Name: Safety_Stock
+
 ```dax
 Safety_Stock = SUM(fact_Inventory[safety_stock_level])
 ```
 Format: Whole number
 
-Shows the additional inventory kept to avoid stock shortages.
+Description: Additional inventory kept to avoid stock shortages.
+
+Dependencies / Notes:
+- Ensure consistent naming/casing for fact_Inventory vs fact_inventory table.
 
 ---
 
-## Shipment Cost
+### Shipment Cost
+Name: Shipment_cost
+
 ```dax
 Shipment_cost = SUM(fact_shipment[shipping_cost])
 ```
 Format: Currency
 
-Calculates the total shipping and transportation cost.
+Description: Total shipping and transportation cost.
+
+Dependencies / Notes:
+- Uses fact_shipment[shipping_cost]. Consider splitting by carrier or shipment type if needed.
 
 ---
 
-## Total Delay
+### Total Delay
+Name: Total_Delay
+
 ```dax
 Total_Delay =
 CALCULATE(
     [Total_Shipment],
-    fact_shipment[status]="Delayed"
+    fact_shipment[status] = "Delayed"
 )
 ```
 Format: Whole number
 
-Counts the number of delayed shipments.
+Description: Counts the number of delayed shipments.
+
+Dependencies / Notes:
+- Relies on [Total_Shipment] and fact_shipment[status] values.
 
 ---
 
-## Total Delivered Quantity
+### Total Delivered Quantity
+Name: Total_Delivered_Quantity
+
 ```dax
 Total_Delivered_Quantity =
 CALCULATE(
     [Total_Sales_Quantity],
-    fact_shipment[status]=""
+    fact_shipment[status] = ""
 )
 ```
 Format: Whole number
 
-Calculates the quantity delivered based on shipment status.
+Description: Calculates the quantity delivered based on shipment status (original model used empty-string filter). Review the filter condition — it may need to match a specific status like "Delivered".
+
+Dependencies / Notes:
+- Check the status values in fact_shipment; adjust the filter to the intended value.
 
 ---
 
-## Total Delivered Shipments
+### Total Delivered Shipments
+Name: Total_Delivered_ship
+
 ```dax
 Total_Delivered_ship =
 CALCULATE(
     [Total_Shipment],
-    fact_shipment[status]="Delivered"
+    fact_shipment[status] = "Delivered"
 )
 ```
 Format: Whole number
 
-Counts the number of successfully delivered shipments.
+Description: Counts the number of successfully delivered shipments.
+
+Dependencies / Notes:
+- Depends on [Total_Shipment] and consistent status values.
 
 ---
 
-## Total Delayed Quantity
+### Total Delayed Quantity
+Name: Total_QTY_Delay
+
 ```dax
 Total_QTY_Delay =
 CALCULATE(
     [Total_Sales_Quantity],
-    fact_shipment[Status]="Delayed"
+    fact_shipment[Status] = "Delayed"
 )
 ```
 Format: Whole number
 
-Calculates the quantity affected by delayed shipments.
+Description: Calculates the quantity affected by delayed shipments.
+
+Dependencies / Notes:
+- Note casing of [Status] column — ensure consistent column names.
 
 ---
 
-## Total Revenue
+### Total Revenue
+Name: Total_Revenue
+
 ```dax
 Total_Revenue = SUM(fact_sales[net_revenue])
 ```
 Format: Currency
 
-Calculates the total revenue generated from sales.
+Description: Total revenue generated from sales.
+
+Dependencies / Notes:
+- Uses fact_sales[net_revenue].
 
 ---
 
-## Total Sales Cost
+### Total Sales Cost
+Name: Total_Sales_Cost
+
 ```dax
 Total_Sales_Cost = SUM(fact_procurement[total_cost])
 ```
 Format: Currency
 
-Calculates the total procurement cost associated with sales activities.
+Description: Total procurement cost associated with sales activities.
+
+Dependencies / Notes:
+- Uses fact_procurement[total_cost].
 
 ---
 
-## Total Sales Quantity
+### Total Sales Quantity
+Name: Total_Sales_Quantity
+
 ```dax
 Total_Sales_Quantity = SUM(fact_sales[quantity_sold])
 ```
 Format: Whole number
 
-Calculates the total quantity of products sold.
+Description: Total quantity of products sold.
+
+Dependencies / Notes:
+- Uses fact_sales[quantity_sold].
 
 ---
 
-## Total Shipment
+### Total Shipment
+Name: Total_Shipment
+
 ```dax
-Total_Shipment =
-DISTINCTCOUNT(fact_shipment[shipment_id])
+Total_Shipment = DISTINCTCOUNT(fact_shipment[shipment_id])
 ```
 Format: Whole number
 
-Counts the total number of unique shipments.
+Description: Counts the total number of unique shipments.
+
+Dependencies / Notes:
+- Ensure shipment_id is unique per shipment.
 
 ---
 
-## Total Shipment Quantity
+### Total Shipment Quantity
+Name: Total_Shipment_Quantity
+
 ```dax
-Total_Shipment_Quantity =
-SUM(fact_shipment[quantity])
+Total_Shipment_Quantity = SUM(fact_shipment[quantity])
 ```
 Format: Whole number
 
-Calculates the total quantity included in shipments.
+Description: Total quantity included in shipments.
+
+Dependencies / Notes:
+- Uses fact_shipment[quantity].
 
 ---
 
-## Turnover Rate
+### Turnover Rate
+Name: Turnover_Rate
+
 ```dax
 Turnover_Rate =
 DIVIDE(
@@ -292,7 +427,10 @@ DIVIDE(
 ```
 Format: Decimal number
 
-Measures how efficiently inventory is being sold and replaced.
+Description: Measures how efficiently inventory is being sold and replaced (sales quantity divided by average stock level).
+
+Dependencies / Notes:
+- Uses [Total_Sales_Quantity] and fact_inventory[stock_level].
 
 ---
 
@@ -302,7 +440,7 @@ Measures how efficiently inventory is being sold and replaced.
 
 | Table | Notes |
 |---|---|
-| Measures Table | Holding table containing the 26 analytical measures |
+| Measures Table | Holding table containing the analytical measures |
 | fact_sales | Main sales transaction table |
 | fact_procurement | Procurement and purchasing data |
 | fact_inventory | Inventory and stock management data |
@@ -315,3 +453,10 @@ Measures how efficiently inventory is being sold and replaced.
 **Total Measures: 26**
 
 **Measure Table:** `Measures Table`
+
+---
+
+## Change log
+
+- 2026-07-29 — Converted SAMSUNG_Measures to documentation-style file. Cleaned headings, added description/format/dependencies for each measure.
+
