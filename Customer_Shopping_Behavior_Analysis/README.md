@@ -171,7 +171,7 @@ Customer_Shopping_Behavior_Analysis/
 
 ## ⚠️ Note on credentials
 
-The PostgreSQL cell in the notebook contains a hard-coded password. Before sharing the notebook, replace it with a placeholder or read it from an environment variable, e.g. `os.environ["PGPASSWORD"]`. If that password is used anywhere else, change it.
+The database cells use the placeholder `your_password`. Enter your own password locally and don't commit it. Better still, read it from an environment variable, e.g. `os.environ["PGPASSWORD"]`.
 
 ---
 
