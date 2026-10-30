@@ -26,7 +26,7 @@ The report has a **Home** page with navigation buttons and five analysis pages:
 - **Lead times average 11.5 days.** Suppliers in China, Japan, South Korea and Taiwan take about 12.1–12.3 days, while the Samsung assembly sites in India and Vietnam take about 9.7–9.9.
 - **75% of shipments are delivered**, 15% are in transit, 8% are delayed and 2% are processing. **Maersk Line** has the most delays. The top delay reasons are carrier capacity, documentation issues and port congestion.
 - **Shipping costs total $2.95M** across 7,500 shipments. UPS Worldwide ($371K) and XPO Logistics ($356K) cost the most.
-- **Defective units rise sharply in Q4** (October–December), following the same pattern as inventory levels.
+- **The overall defect rate is 0.63%** (24,102 defective out of 3.83M units produced). Defective units rise sharply in Q4 (October–December).
 
 ## Data model
 
@@ -51,14 +51,14 @@ Every table is included in `data/` as a CSV. Column descriptions are in the [dat
 
 ## DAX measures
 
-25 measures are grouped by area. Full formulas and descriptions are in [`measures/SAMSUNG_Measures.md`](measures/SAMSUNG_Measures.md).
+30 measures, grouped by area. Full formulas, number formats and descriptions are in [`measures/SAMSUNG_Measures.md`](measures/SAMSUNG_Measures.md).
 
 | Area | Measures |
 |---|---|
-| Sales | Total Revenue, Profit, Profit Margin %, Discount, Discount %, Growth Revenue (YoY), Total Sales Quantity, Total Sales Cost |
-| Procurement | Order Quantity, Avg Lead Time |
-| Inventory | Inventory Value, Safety Stock, Reorder Point, Turnover Rate, Days of Inventory |
-| Production | Defect Rate (defective units) |
+| Sales | Total Revenue, Profit, Profit Margin %, Discount, Discount %, Growth Revenue (YoY), Total Sales Quantity, Total Sales Cost (cost of goods sold) |
+| Procurement | Order Quantity, Avg Lead Time, Total Unit Cost (procurement spend), Avg Unit Cost (per supplier), Avg Quality Score |
+| Inventory | Inventory Value ($ at cost), Inventory Units, Safety Stock, Reorder Point, Turnover Rate, Days of Inventory. Stock measures use the latest snapshot in the current filter instead of summing months. |
+| Production | Defect Rate (defective ÷ produced) |
 | Shipment | Total Shipment, Total Shipment Quantity, Shipment Cost, Total Delivered Shipments, Delivered %, Total Delay, Total Delayed Quantity, Total Delivered Quantity, Perfect Order % |
 
 ## Dashboard design
@@ -100,17 +100,18 @@ SAMSUNG-PowerBI-Analysis/
 
 ## Known issues
 
-These were found in the previous version of the report. Some may already be fixed in the current `.pbix`:
+Most formula problems from the previous version are fixed: Delivered %, delivered and delayed quantities, defect rate, inventory value, stock snapshots, turnover format, days of inventory, unit cost per supplier, sales cost and revenue growth. These items are still open:
 
 | Issue | Where | Suggested fix |
 |---|---|---|
-| **Delivered %** card shows 100%, but only 75% of shipments are delivered | Shipment page | Check the filter context of the card. The measure itself (`Total_Delivered_ship / Total_Shipment`) returns 75% on the full table. |
-| `Total_Delivered_Quantity` filters on `status = ""`, which matches no rows | Measures Table | Change the filter to `"Delivered"` |
-| `Perfect Order %` filters `fact_shipment` and `fact_production` together, but the two facts are only linked through shared dimensions | Measures Table | Define a perfect order using shipment columns only, such as delivered and no delay reason |
-| **Turnover Rate** is formatted as a percentage (134.8K%) | Supplier and Inventory pages | Format it as a decimal number |
-| The name **Avg Load Time** should be **Avg Lead Time**, and four Supplier-page charts share the same title | Supplier page | Rename the measure and give each chart its own title |
-| **Defect Rate** returns a count of defective units, not a rate | Measures Table | Rename it to *Defective Units*, or divide by `SUM(fact_production[quantity_produced])` |
-| **Inventory Value** sums stock units, not money | Measures Table | Rename it to *Inventory Units*, or multiply by `dim_product[unit_cost]` |
+| **Perfect Order %** filters on `fact_production[defect_rate_pct]`, but production isn't related to shipments, so that filter has no effect and the result equals the delivered share | Measures Table | Base it on shipment columns only, such as delivered with no delay reason |
+| Five Supplier-page charts share the title **"Supplier by Avg Load Time"**, both Shipment-page bar charts are titled **"Total Delay Shipment"**, and one Customer-page title is cut off ("…Total_Revenue b") | Supplier, Shipment and Customer pages | Give each chart its own title |
+| The measure name **Avg_Load_Time** should be *Avg Lead Time* | Measures Table | Rename it. Visuals update automatically. |
+| Leftovers in the model: an empty measure named `Measure`, a `Folder` table from an old import, and `Defect Rate %`, which duplicates `Defect_Rate` | Model | Delete them |
+| Auto date/time is on, and `dim_date` isn't marked as a date table, so Power BI adds hidden date tables | Model settings | Turn off *File → Options → Data Load → Auto date/time* and use *Mark as date table* on `dim_date` |
+| Money measures have no currency format: Total Revenue, Profit, Discount, Shipment Cost, Total Sales Cost, Total Unit Cost | Measures Table | Set the format to Currency |
+| `dim_date[Month_Short]` is only the month number, so monthly charts add January 2023 and January 2024 together | Monthly trend charts | Add a year-month column, or put Year on the axis or in a slicer |
+| Four products have no image URL: OLED 65" 4K, Smart Front Load Washer, Galaxy Watch6 Classic, Galaxy Buds2 Pro | `dim_product[Img]` | Add the missing links |
 
 ## Tools
 
