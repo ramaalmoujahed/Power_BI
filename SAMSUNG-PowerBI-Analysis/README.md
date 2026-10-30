@@ -71,7 +71,6 @@ Full column descriptions are in the [data dictionary](data/README.md).
 
 ```
 SAMSUNG-PowerBI-Analysis/
-├── SAMSUNG powerBI Analysis.pbix
 ├── README.md                   (this file)
 ├── data/
 │   ├── README.md               (data dictionary)
@@ -93,13 +92,13 @@ SAMSUNG-PowerBI-Analysis/
 
 ## How to use
 
-1. Open `SAMSUNG powerBI Analysis.pbix` in **Power BI Desktop**.
-2. Start on the **Home** page and use the buttons to move between sections.
-3. To refresh from the CSV files, go to **Transform data → Data source settings**, point each source to the matching file in `data/`, then click **Refresh**.
+The `.pbix` report file is not in this repository at the moment. This folder holds the data, the measure formulas and screenshots of every page.
+
+To rebuild the model, load the CSVs in `data/` into Power BI Desktop, relate each fact table to the dimensions on the key columns described in the [data dictionary](data/README.md), and add the measures from [`measures/SAMSUNG_Measures.md`](measures/SAMSUNG_Measures.md).
 
 ## Known issues
 
-These were found while documenting the report and are worth fixing in the `.pbix`:
+These were found while documenting the report and are worth fixing in the report:
 
 | Issue | Where | Suggested fix |
 |---|---|---|
