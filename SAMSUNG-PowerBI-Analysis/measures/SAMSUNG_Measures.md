@@ -1,7 +1,7 @@
 # Procurement & Supply Chain Analytics — DAX Measures
 
 Extracted from the Power BI data model using DAX Studio.
-These are the 26 measures defined in the data model, found in the **"Measures Table"**.
+These are the 25 measures defined in the data model, found in the **"Measures Table"**.
 
 ---
 
@@ -302,7 +302,7 @@ Measures how efficiently inventory is being sold and replaced.
 
 | Table | Notes |
 |---|---|
-| Measures Table | Holding table containing the 26 analytical measures |
+| Measures Table | Holding table containing the 25 analytical measures |
 | fact_sales | Main sales transaction table |
 | fact_procurement | Procurement and purchasing data |
 | fact_inventory | Inventory and stock management data |
@@ -312,6 +312,6 @@ Measures how efficiently inventory is being sold and replaced.
 
 ---
 
-**Total Measures: 26**
+**Total Measures: 25**
 
 **Measure Table:** `Measures Table`
