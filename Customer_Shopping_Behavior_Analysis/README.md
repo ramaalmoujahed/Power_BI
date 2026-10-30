@@ -32,8 +32,7 @@ The workflow covers the full analytics pipeline:
 | Programming | Python (pandas) |
 | Database | PostgreSQL / MySQL / SQL Server |
 | Visualization | Power BI |
-| Reporting | Microsoft Word / PDF |
-| Presentation | Gamma |
+| Presentation | Gamma (exported to PowerPoint) |
 | Environment | Jupyter Notebook |
 
 ---
@@ -74,9 +73,8 @@ Performed business-focused SQL queries to answer key questions, including:
 - Built an interactive Power BI dashboard to visualize key metrics and trends
 - Included filters for subscription status, gender, category, and shipping type
 
-### 7. Reporting & Presentation
-- Compiled findings into a structured written report
-- Created a summary presentation using Gamma for stakeholder communication
+### 7. Presentation
+- Created a summary presentation in Gamma for stakeholders (`Customer_Shopping_Behavior_Analysis_1.pptx`)
 
 ---
 
@@ -88,7 +86,15 @@ The Power BI dashboard provides an interactive view of:
 - Revenue and sales breakdown by age group
 - Customer distribution by subscription status
 
-*(Insert dashboard screenshot or Power BI link here)*
+![Customer Behavior Dashboard](screenshots/dashboard.png)
+
+Filtered to **Clothing** with **Free Shipping**, showing 294 customers, an average purchase of $61.99 and 24.8% subscribers:
+
+![Dashboard filtered to Clothing and Free Shipping](screenshots/dashboard_filtered.png)
+
+Slicers for subscription status, gender, category and shipping type filter every visual on the page.
+
+**Known issue:** the *Sales by Age Group* chart uses *Sum of customer_id*, so it adds up ID numbers (axis up to 2M) instead of counting customers. Change the field's aggregation to **Count**, or use the `Number of Customers` measure, which is what *Sales by Category* already shows (about 1.7K for Clothing).
 
 ---
 
@@ -124,43 +130,51 @@ The Power BI dashboard provides an interactive view of:
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd customer-shopping-behavior-analysis
+git clone https://github.com/ramaalmoujahed/Power_BI.git
+cd Power_BI/Customer_Shopping_Behavior_Analysis
 
-# Install required Python packages
-pip install pandas sqlalchemy psycopg2-binary
+# Install required Python packages (PostgreSQL driver; use pymysql or pyodbc for MySQL / SQL Server)
+pip install pandas sqlalchemy psycopg2-binary jupyter
 ```
 
 ### Running the Analysis
 
-1. Open the Jupyter notebook and run the data cleaning and EDA cells
-2. Update your database connection credentials (username, password, host, port, database name)
-3. Run the cell that loads the cleaned DataFrame into your SQL database
-4. Execute the SQL queries provided in the `/sql` folder against your database
-5. Open the Power BI file (`.pbix`) and refresh the data connection to your database
-6. Review the generated report and presentation in the `/reports` folder
+1. Open `Customer_Shopping_Behavior_Analysis.ipynb` and run the data cleaning and EDA cells. The notebook reads `customer_shopping_behavior.csv` from the same folder.
+2. Create a database named `customer_behavior`, then fill in your own connection details (username, password, host, port) in the database cell. The notebook has cells for PostgreSQL, MySQL and SQL Server: run only the one you use.
+3. Run that cell to load the cleaned DataFrame into a table called `customer`.
+4. Run the queries in `customer_shopping_behavior.sql` against the database. They use PostgreSQL syntax, e.g. `::numeric` casts and `LIMIT`.
+5. Open `customer_behavior_dashboard.pbix` in Power BI Desktop. It reads the `public.customer` table from PostgreSQL. To refresh, go to **Transform data → Data source settings** and point it to your server.
+6. Open `Customer_Shopping_Behavior_Analysis_1.pptx` for the summary presentation.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-├── data/
-│   └── customer_shopping_behavior.csv
-├── notebooks/
-│   └── data_cleaning_eda.ipynb
-├── sql/
-│   └── business_queries.sql
-├── dashboard/
-│   └── customer_behavior_dashboard.pbix
-├── reports/
-│   ├── Customer_Shopping_Behavior_Analysis.pdf
-│   └── Customer_Shopping_Behavior_Analysis.pptx
+Customer_Shopping_Behavior_Analysis/
+├── customer_shopping_behavior.csv          raw dataset (3,900 rows × 18 columns)
+├── Customer_Shopping_Behavior_Analysis.ipynb   cleaning, EDA, feature engineering, database load
+├── customer_shopping_behavior.sql          10 business questions in SQL (PostgreSQL)
+├── customer_behavior_dashboard.pbix        Power BI dashboard
+├── Customer_Shopping_Behavior_Analysis_1.pptx  summary presentation
+├── screenshots/
+│   ├── dashboard.png                       full dashboard
+│   └── dashboard_filtered.png              filtered to Clothing + Free Shipping
 └── README.md
 ```
+
+| Missing item | Status |
+|---|---|
+| Written report (PDF) | Mentioned in the project plan but not in the repository |
+
+---
+
+## ⚠️ Note on credentials
+
+The PostgreSQL cell in the notebook contains a hard-coded password. Before sharing the notebook, replace it with a placeholder or read it from an environment variable, e.g. `os.environ["PGPASSWORD"]`. If that password is used anywhere else, change it.
 
 ---
 
 ## 📬 Contact
 
-For questions or collaboration opportunities, feel free to reach out.
+For questions or collaboration opportunities, reach out on [GitHub](https://github.com/ramaalmoujahed).

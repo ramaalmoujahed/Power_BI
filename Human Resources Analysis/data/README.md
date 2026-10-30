@@ -4,18 +4,19 @@ Raw tables exported from the Power BI data model using DAX Studio (`EVALUATE` qu
 
 ## Files
 
-### `Human_Resources_FullData.csv`
+### `Human__Resources_FullData.xlsx`
 The main fact table. One row per employee record.
 
 - **Rows:** 3,520
-- **Columns:** 24 (Gender, Marital Status, Education, Business Unit, Departments, Job Classification, Job Type, Emp. Type, Job Involvement, Job Satisfaction, Relationship Satisfaction, Performance Rating, Years in Current Role, Years Since Last Promotion, Salary, Sick Days, Balance Days, and supporting/date columns)
+- **Columns:** 23 (ID, Last Name, Gender, Age, Marital Status, Education, Business Unit, Department, Group, Job Classification, Job Type, Employee Type, Hire Date, Job Involvement, Job Satisfaction, Relationship Satisfaction, Performance Rating, Work-Life Balance, Years in Current Role, Years Since Last Promotion, Salary, Sick Days, Balance Days)
+- **Business units:** Houston, Los Angeles, New York City, Seattle. **Departments:** 15. **Hire dates:** 2013–2018.
 - **Source query:**
   ```dax
   EVALUATE 'Human Resources'
   ```
 
-### `Date.csv`
-The model's calendar/date table, used for the `LY Salary` (last-year) time-intelligence measure.
+### `Date.xlsx`
+The model's calendar table (1 January 2013 – 31 December 2018), used for the `LY Salary` (last-year) time-intelligence measure.
 
 - **Rows:** 2,190
 - **Source query:**
@@ -23,8 +24,8 @@ The model's calendar/date table, used for the `LY Salary` (last-year) time-intel
   EVALUATE 'Date'
   ```
 
-### `Dims.csv`
-A supporting dimension table used elsewhere in the model.
+### `Dims.xlsx`
+An unpivoted dimension table (`ID`, `Dimentions`, `Value`) with one row per employee per dimension (Groups, Education, Gender, Job Involvement, …). It powers the dimension switcher on the Business Unit / Regions page.
 
 - **Rows:** 35,200
 - **Source query:**
@@ -32,7 +33,7 @@ A supporting dimension table used elsewhere in the model.
   EVALUATE Dims
   ```
 
-### `Metrics.csv`
+### `Metrics.xlsx`
 A small lookup table that drives the "Measure Selected" slicer, letting report visuals switch between Salary and Employee Count views.
 
 - **Rows:** 2
@@ -41,7 +42,7 @@ A small lookup table that drives the "Measure Selected" slicer, letting report v
   EVALUATE Metrics
   ```
 
-### `Avg_Metrics.csv`
+### `Avg_Metric.xlsx`
 A small lookup table that drives the "Measure Selection Avg" slicer, letting report visuals switch between Average Salary, Average Balance Days, and Average Sick Days.
 
 - **Rows:** 3
