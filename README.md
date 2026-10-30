@@ -8,7 +8,7 @@ A collection of end-to-end Power BI dashboards built on business datasets: banki
 
 | # | Project | Domain | Pages | Highlights |
 |---|---|---|---|---|
-| 1 | [SAMSUNG Supply Chain & Logistics](SAMSUNG-PowerBI-Analysis/) | Supply chain | 6 | Star schema with 5 fact and 5 dimension tables, 25 DAX measures, page navigation, supplier / inventory / shipment / customer views |
+| 1 | [SAMSUNG Supply Chain & Logistics](SAMSUNG-PowerBI-Analysis/) | Supply chain | 6 | Star schema with 5 fact and 5 dimension tables, 30 DAX measures, page navigation, supplier / inventory / shipment / customer views |
 | 2 | [Insurance Risk & Claims Analysis](Insurance-Risk-Claims-Analysis/) | Insurance | 1 | 37.5K policies, field parameter to switch every chart between claim amount and policy count, heat-map matrix |
 | 3 | [Human Resources Analysis](Human%20Resources%20Analysis/) | HR | 3 | 3,520 employees, two dynamic measure selectors, time-intelligence salary comparison, dimension switcher table |
 | 4 | [America Bank Analysis](America_Bank/) | Banking | 4 | ~4K customers, US shape map, balance and loan analysis, dynamic measure and dimension selectors |
