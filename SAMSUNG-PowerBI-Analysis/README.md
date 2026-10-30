@@ -25,6 +25,7 @@ The report has a **Home** page with navigation buttons and five analysis pages:
 - **Online is the largest channel** (41% of revenue), just ahead of retailers (40%). Direct sales make up 18%.
 - **Lead times average 11.5 days.** Suppliers in China, Japan, South Korea and Taiwan take about 12.1–12.3 days, while the Samsung assembly sites in India and Vietnam take about 9.7–9.9.
 - **75% of shipments are delivered**, 15% are in transit, 8% are delayed and 2% are processing. **Maersk Line** has the most delays. The top delay reasons are carrier capacity, documentation issues and port congestion.
+- **Shipping costs total $2.95M** across 7,500 shipments. UPS Worldwide ($371K) and XPO Logistics ($356K) cost the most.
 - **Defective units rise sharply in Q4** (October–December), following the same pattern as inventory levels.
 
 ## Data model
@@ -35,18 +36,18 @@ A star schema with five fact tables sharing five dimensions, plus a dedicated `M
 
 | Table | Type | Rows | Grain |
 |---|---|---|---|
-| `fact_sales` ✓ | Fact | 8,500 | One sales order line |
+| `fact_sales` | Fact | 8,500 | One sales order line |
 | `fact_shipment` | Fact | 7,500 | One shipment |
-| `fact_production` ✓ | Fact | 4,500 | One production batch |
-| `fact_procurement` ✓ | Fact | 2,200 | One purchase order |
-| `fact_inventory` ✓ | Fact | 1,152 | Stock snapshot per product, warehouse and date |
-| `dim_date` | Dimension | 731 | One day (2023-01-01 to 2024-12-31) |
+| `fact_production` | Fact | 4,500 | One production batch |
+| `fact_procurement` | Fact | 2,200 | One purchase order |
+| `fact_inventory` | Fact | 1,152 | Stock snapshot per product, warehouse and date |
+| `dim_date` | Dimension | 762 | One day (2023-01-01 to 2025-01-31) |
 | `dim_product` | Dimension | 16 | Product SKU (smartphones, tablets, TVs, appliances, wearables) |
-| `dim_supplier` ✓ | Dimension | 7 | Component supplier |
+| `dim_supplier` | Dimension | 7 | Component supplier |
 | `dim_facility` | Dimension | 6 | 3 factories and 3 distribution centres |
 | `dim_customer` | Dimension | 5 | Retail or online customer |
 
-The `data/` folder contains the 5 tables marked with ✓ below. The other tables are included in the `.pbix` file but not exported as CSVs. Column descriptions are in the [data dictionary](data/README.md).
+Every table is included in `data/` as a CSV. Column descriptions are in the [data dictionary](data/README.md).
 
 ## DAX measures
 
@@ -75,11 +76,16 @@ SAMSUNG-PowerBI-Analysis/
 ├── README.md                   (this file)
 ├── data/
 │   ├── README.md               (data dictionary)
+│   ├── dim_customer.csv
+│   ├── dim_date.csv
+│   ├── dim_facility.csv
+│   ├── dim_product.csv
 │   ├── dim_supplier.csv
 │   ├── fact_inventory.csv
 │   ├── fact_procurement.csv
 │   ├── fact_production.csv
-│   └── fact_sales.csv
+│   ├── fact_sales.csv
+│   └── fact_shipment.csv
 ├── measures/
 │   └── SAMSUNG_Measures.md
 └── screenshots/
@@ -90,7 +96,7 @@ SAMSUNG-PowerBI-Analysis/
 
 1. Open `SAMSUNG powerBI Analysis.pbix` in **Power BI Desktop**. All tables are already loaded in the file.
 2. Start on the **Home** page and use the buttons to move between sections.
-3. The CSVs in `data/` let you inspect the main tables without Power BI.
+3. The CSVs in `data/` hold every table in the model, so you can inspect the data or rebuild the model without the `.pbix`.
 
 ## Known issues
 
