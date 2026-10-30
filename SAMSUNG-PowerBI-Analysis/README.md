@@ -23,7 +23,7 @@ The report has a **Home** page with navigation buttons and five analysis pages:
 - **Smartphones drive 56% of revenue** ($98.7M). The **Galaxy S24 Ultra** ($34.5M) and **Galaxy Z Fold5** ($27.7M) are the top products.
 - **Revenue is spread evenly across customers:** Amazon, Flipkart, Best Buy and MediaMarkt each bring in about $35–37M. Samsung's own Direct Store is lowest at $32.2M.
 - **Online is the largest channel** (41% of revenue), just ahead of retailers (40%). Direct sales make up 18%.
-- **Lead times average 11.5 days.** Suppliers in China, Japan, South Korea and Taiwan take about 12.4 days, while the Samsung assembly sites in India and Vietnam take about 9.5.
+- **Lead times average 11.5 days.** Suppliers in China, Japan, South Korea and Taiwan take about 12.1–12.3 days, while the Samsung assembly sites in India and Vietnam take about 9.7–9.9.
 - **75% of shipments are delivered**, 15% are in transit, 8% are delayed and 2% are processing. **Maersk Line** has the most delays. The top delay reasons are carrier capacity, documentation issues and port congestion.
 - **Defective units rise sharply in Q4** (October–December), following the same pattern as inventory levels.
 
@@ -35,18 +35,18 @@ A star schema with five fact tables sharing five dimensions, plus a dedicated `M
 
 | Table | Type | Rows | Grain |
 |---|---|---|---|
-| `fact_sales` | Fact | 8,500 | One sales order line |
+| `fact_sales` ✓ | Fact | 8,500 | One sales order line |
 | `fact_shipment` | Fact | 7,500 | One shipment |
-| `fact_production` | Fact | 4,500 | One production batch |
-| `fact_procurement` | Fact | 2,200 | One purchase order |
-| `fact_inventory` | Fact | 1,152 | Stock snapshot per product, warehouse and date |
+| `fact_production` ✓ | Fact | 4,500 | One production batch |
+| `fact_procurement` ✓ | Fact | 2,200 | One purchase order |
+| `fact_inventory` ✓ | Fact | 1,152 | Stock snapshot per product, warehouse and date |
 | `dim_date` | Dimension | 731 | One day (2023-01-01 to 2024-12-31) |
 | `dim_product` | Dimension | 16 | Product SKU (smartphones, tablets, TVs, appliances, wearables) |
-| `dim_supplier` | Dimension | 7 | Component supplier |
+| `dim_supplier` ✓ | Dimension | 7 | Component supplier |
 | `dim_facility` | Dimension | 6 | 3 factories and 3 distribution centres |
 | `dim_customer` | Dimension | 5 | Retail or online customer |
 
-Full column descriptions are in the [data dictionary](data/README.md).
+The `data/` folder contains the 5 tables marked with ✓ below. The other tables are included in the `.pbix` file but not exported as CSVs. Column descriptions are in the [data dictionary](data/README.md).
 
 ## DAX measures
 
@@ -71,19 +71,15 @@ Full column descriptions are in the [data dictionary](data/README.md).
 
 ```
 SAMSUNG-PowerBI-Analysis/
+├── SAMSUNG powerBI Analysis.pbix
 ├── README.md                   (this file)
 ├── data/
 │   ├── README.md               (data dictionary)
-│   ├── dim_customer.csv
-│   ├── dim_date.csv
-│   ├── dim_facility.csv
-│   ├── dim_product.csv
 │   ├── dim_supplier.csv
 │   ├── fact_inventory.csv
 │   ├── fact_procurement.csv
 │   ├── fact_production.csv
-│   ├── fact_sales.csv
-│   └── fact_shipment.csv
+│   └── fact_sales.csv
 ├── measures/
 │   └── SAMSUNG_Measures.md
 └── screenshots/
@@ -92,17 +88,16 @@ SAMSUNG-PowerBI-Analysis/
 
 ## How to use
 
-The `.pbix` report file is not in this repository at the moment. This folder holds the data, the measure formulas and screenshots of every page.
-
-To rebuild the model, load the CSVs in `data/` into Power BI Desktop, relate each fact table to the dimensions on the key columns described in the [data dictionary](data/README.md), and add the measures from [`measures/SAMSUNG_Measures.md`](measures/SAMSUNG_Measures.md).
+1. Open `SAMSUNG powerBI Analysis.pbix` in **Power BI Desktop**. All tables are already loaded in the file.
+2. Start on the **Home** page and use the buttons to move between sections.
+3. The CSVs in `data/` let you inspect the main tables without Power BI.
 
 ## Known issues
 
-These were found while documenting the report and are worth fixing in the report:
+These were found in the previous version of the report. Some may already be fixed in the current `.pbix`:
 
 | Issue | Where | Suggested fix |
 |---|---|---|
-| `fact_shipment` keys don't match the dimensions: every `facility_id` (10–16) and many `product_id` (up to 36) and `customer_id` (up to 17) values have no matching row | `data/fact_shipment.csv` | Regenerate the shipment table with keys from `dim_facility` (1–6), `dim_product` (1–16) and `dim_customer` (1–5). Until then, shipment visuals sliced by product, facility or customer show a *(Blank)* group. |
 | **Delivered %** card shows 100%, but only 75% of shipments are delivered | Shipment page | Check the filter context of the card. The measure itself (`Total_Delivered_ship / Total_Shipment`) returns 75% on the full table. |
 | `Total_Delivered_Quantity` filters on `status = ""`, which matches no rows | Measures Table | Change the filter to `"Delivered"` |
 | `Perfect Order %` filters `fact_shipment` and `fact_production` together, but the two facts are only linked through shared dimensions | Measures Table | Define a perfect order using shipment columns only, such as delivered and no delay reason |
