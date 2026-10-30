@@ -86,7 +86,15 @@ The Power BI dashboard provides an interactive view of:
 - Revenue and sales breakdown by age group
 - Customer distribution by subscription status
 
-> 📷 A dashboard screenshot hasn't been added yet. To add one, open `customer_behavior_dashboard.pbix`, export the page as an image, save it as `screenshots/dashboard.png` and link it here.
+![Customer Behavior Dashboard](screenshots/dashboard.png)
+
+Filtered to **Clothing** with **Free Shipping**, showing 294 customers, an average purchase of $61.99 and 24.8% subscribers:
+
+![Dashboard filtered to Clothing and Free Shipping](screenshots/dashboard_filtered.png)
+
+Slicers for subscription status, gender, category and shipping type filter every visual on the page.
+
+**Known issue:** the *Sales by Age Group* chart uses *Sum of customer_id*, so it adds up ID numbers (axis up to 2M) instead of counting customers. Change the field's aggregation to **Count**, or use the `Number of Customers` measure, which is what *Sales by Category* already shows (about 1.7K for Clothing).
 
 ---
 
@@ -149,12 +157,14 @@ Customer_Shopping_Behavior_Analysis/
 ├── customer_shopping_behavior.sql          10 business questions in SQL (PostgreSQL)
 ├── customer_behavior_dashboard.pbix        Power BI dashboard
 ├── Customer_Shopping_Behavior_Analysis_1.pptx  summary presentation
+├── screenshots/
+│   ├── dashboard.png                       full dashboard
+│   └── dashboard_filtered.png              filtered to Clothing + Free Shipping
 └── README.md
 ```
 
 | Missing item | Status |
 |---|---|
-| Dashboard screenshot | Not added yet (see *Dashboard* above) |
 | Written report (PDF) | Mentioned in the project plan but not in the repository |
 
 ---

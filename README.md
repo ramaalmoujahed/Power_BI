@@ -22,6 +22,8 @@ A collection of end-to-end Power BI dashboards built on business datasets: banki
 | ![SAMSUNG overview](SAMSUNG-PowerBI-Analysis/screenshots/Screenshot%202026-07-29%20184521.png) | ![Insurance dashboard](Insurance-Risk-Claims-Analysis/screenshots/dashboard.png) |
 | **Human Resources** | **America Bank** |
 | ![HR report](Human%20Resources%20Analysis/screenshots/Screenshot%202026-06-24%20230140.png) | ![America Bank report](America_Bank/screenshots/Screenshot%202026-06-24%20222223.png) |
+| **Customer Shopping Behavior** | |
+| ![Customer dashboard](Customer_Shopping_Behavior_Analysis/screenshots/dashboard.png) | |
 
 ## Skills demonstrated
 
